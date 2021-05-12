@@ -1,17 +1,9 @@
 import React, { useState } from 'react';
 import { Button, makeStyles, Typography, useTheme, createStyles } from '@material-ui/core';
-import SandwichBread from '../../components/SandwichIngredients/SandwichBread';
-import SandwichBacon from '../../components/SandwichIngredients/SandwichBacon';
-import SandwichCheese from '../../components/SandwichIngredients/SandwichCheese';
-import SandwichCucumber from '../../components/SandwichIngredients/SandwichCucumber';
+import SandwichBread from '../../components/Sandwich/Ingredients/SandwichBread';
+import Sandwich from '../../components/Sandwich/Sandwich';
 
 type SandwichIngredientType = 'bacon' | 'cheese' | 'cucumber';
-
-const ingredientsMap: { [key in SandwichIngredientType]: JSX.Element } = {
-    bacon: <SandwichBacon />,
-    cheese: <SandwichCheese />,
-    cucumber: <SandwichCucumber />,
-};
 
 const useStyles = makeStyles((theme) =>
     createStyles({
@@ -81,22 +73,6 @@ const SandwichBuilder = (): JSX.Element => {
         });
     };
 
-    const sandwichIngredients: JSX.Element[] = [];
-
-    ingredients.forEach((ingredient, index) => {
-        const ingredientComponent = (
-            <div
-                key={`${ingredient + index}`}
-                onClick={() => onDeleteIngredientHandler(index)}
-                aria-hidden="true"
-            >
-                {ingredientsMap[ingredient]}
-            </div>
-        );
-
-        sandwichIngredients.push(ingredientComponent);
-    });
-
     return (
         <div className={classes.root}>
             <Typography variant="h4" component="h1" className={classes.title}>
@@ -127,9 +103,10 @@ const SandwichBuilder = (): JSX.Element => {
             </div>
 
             <div className={classes.sandwichOutput}>
-                <SandwichBread />
-                {sandwichIngredients}
-                <SandwichBread />
+                <Sandwich
+                    ingredients={ingredients}
+                    onIngredientClick={(index) => onDeleteIngredientHandler(index)}
+                />
             </div>
         </div>
     );
