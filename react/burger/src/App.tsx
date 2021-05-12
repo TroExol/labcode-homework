@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
-import { Switch, Route } from 'react-router-dom';
 import Layout from './HOC/Layout/Layout';
+import Routes from './routes/index';
 
 const App = (): JSX.Element => {
     useEffect(() => {
@@ -10,21 +10,7 @@ const App = (): JSX.Element => {
     return (
         <div className="App">
             <Layout>
-                <>
-                    <h1>Content</h1>
-
-                    <Switch>
-                        <Route path="/" exact>
-                            <h1>Home</h1>
-                        </Route>
-                        <Route path="/basket" exact>
-                            <h1>Basket</h1>
-                        </Route>
-                        <Route path="*">
-                            <h1>Not Found</h1>
-                        </Route>
-                    </Switch>
-                </>
+                <>{Routes()}</>
             </Layout>
         </div>
     );
