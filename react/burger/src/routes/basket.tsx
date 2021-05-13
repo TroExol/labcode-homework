@@ -5,7 +5,7 @@ const index: IRouterObject = {
     name: 'basket/index',
     path: '/basket',
     exact: true,
-    renderFn: (): JSX.Element => {
+    RenderFn: (): JSX.Element => {
         return <h1>Basket</h1>;
     },
 };

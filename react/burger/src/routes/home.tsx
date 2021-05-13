@@ -1,12 +1,13 @@
 import React from 'react';
 import { IRouterObject } from './index';
+import SandwichBuilder from '../containers/SandwichBuilder/SandwichBuilder';
 
 const index: IRouterObject = {
     name: 'home/index',
     path: '/',
     exact: true,
-    renderFn: (): JSX.Element => {
-        return <h1>Home</h1>;
+    RenderFn: (): JSX.Element => {
+        return <SandwichBuilder />;
     },
 };
 
