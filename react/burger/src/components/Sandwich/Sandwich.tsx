@@ -5,7 +5,7 @@ import SandwichBacon from './Ingredients/SandwichBacon';
 import SandwichCheese from './Ingredients/SandwichCheese';
 import SandwichCucumber from './Ingredients/SandwichCucumber';
 
-type SandwichIngredientType = 'bacon' | 'cheese' | 'cucumber';
+export type SandwichIngredientType = 'bacon' | 'cheese' | 'cucumber';
 
 const ingredientsMap: { [key in SandwichIngredientType]: JSX.Element } = {
     bacon: <SandwichBacon />,
