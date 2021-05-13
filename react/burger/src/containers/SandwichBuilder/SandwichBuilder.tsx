@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Button, makeStyles, Typography, useTheme, createStyles } from '@material-ui/core';
-import SandwichBread from '../../components/Sandwich/Ingredients/SandwichBread';
 import Sandwich from '../../components/Sandwich/Sandwich';
+import useLocalStorage from '../../hooks/useLocalStorage';
 
 type SandwichIngredientType = 'bacon' | 'cheese' | 'cucumber';
 
@@ -55,10 +55,14 @@ const SandwichBuilder = (): JSX.Element => {
 
     const classes = useStyles(theme);
 
-    const [ingredients, setIngredients] = useState<SandwichIngredientType[]>([]);
+    // const [ingredients, setIngredients] = useState<SandwichIngredientType[]>([]);
+    const [ingredientsStorage, setIngredientsStorage] = useLocalStorage<SandwichIngredientType[]>(
+        'ingredients',
+        [],
+    );
 
     const onAddIngredientHandler = (ingredient: SandwichIngredientType) => {
-        setIngredients((currentState) => {
+        setIngredientsStorage((currentState) => {
             const newState = [...currentState];
             newState.unshift(ingredient);
             return newState;
@@ -66,7 +70,7 @@ const SandwichBuilder = (): JSX.Element => {
     };
 
     const onDeleteIngredientHandler = (ingredientNumber: number) => {
-        setIngredients((currentState) => {
+        setIngredientsStorage((currentState) => {
             const newState = [...currentState];
             newState.splice(ingredientNumber, 1);
             return newState;
@@ -104,7 +108,7 @@ const SandwichBuilder = (): JSX.Element => {
 
             <div className={classes.sandwichOutput}>
                 <Sandwich
-                    ingredients={ingredients}
+                    ingredients={ingredientsStorage}
                     onIngredientClick={(index) => onDeleteIngredientHandler(index)}
                 />
             </div>
