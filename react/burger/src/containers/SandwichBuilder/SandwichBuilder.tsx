@@ -9,6 +9,7 @@ import {
 } from '@material-ui/core';
 import { connect } from 'react-redux';
 import { useForm, Controller } from 'react-hook-form';
+import { useSnackbar } from 'notistack';
 import Sandwich, { SandwichIngredientType } from '../../components/Sandwich/Sandwich';
 import { StoreType, StoreDispatchType } from '../../store';
 import {
@@ -101,6 +102,8 @@ const SandwichBuilder = (props: IProps): JSX.Element => {
 
     const { handleSubmit, control, formState, reset } = useForm();
 
+    const { enqueueSnackbar, closeSnackbar } = useSnackbar();
+
     const onAddIngredientHandler = (ingredient: SandwichIngredientType) => {
         addIngredient({ ingredient });
     };
@@ -117,6 +120,12 @@ const SandwichBuilder = (props: IProps): JSX.Element => {
         addOrder({ ingredients, amount: +data.amount });
         resetIngredients();
         reset();
+
+        const snackBar = enqueueSnackbar('Заказ успешно добавлен в вашу корзину', {
+            variant: 'success',
+            anchorOrigin: { horizontal: 'right', vertical: 'top' },
+            onClick: () => closeSnackbar(snackBar),
+        });
     };
 
     const sandwichOrderForm = ingredients.length > 0 && (

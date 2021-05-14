@@ -42,7 +42,7 @@ const Order = (props: IProps): JSX.Element => {
             <Sandwich ingredients={ingredients} />
 
             <Typography className={classes.amount} variant="h6" component="span" color="secondary">
-                Amount: {amount}
+                Количество: {amount}
             </Typography>
 
             <Button

@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { makeStyles, Typography, createStyles, Modal, Button } from '@material-ui/core';
 import { connect } from 'react-redux';
 import { useHistory } from 'react-router-dom';
+import { useSnackbar } from 'notistack';
 import { StoreDispatchType, StoreType } from '../../store';
 
 import Order from './Order';
@@ -45,6 +46,8 @@ const Orders = (props: IProps) => {
 
     const [openConfirmationState, setOpenConfirmationState] = useState<boolean>(false);
 
+    const { enqueueSnackbar, closeSnackbar } = useSnackbar();
+
     const { orders, resetOrders } = props;
 
     const history = useHistory();
@@ -55,6 +58,12 @@ const Orders = (props: IProps) => {
         resetOrders();
 
         history.push('/');
+
+        const snackBar = enqueueSnackbar('Спасибо за заказ! Мы свяжемся с вами в скором времени', {
+            variant: 'success',
+            anchorOrigin: { horizontal: 'right', vertical: 'top' },
+            onClick: () => closeSnackbar(snackBar),
+        });
     };
 
     const ordersOutput: JSX.Element[] = [];
