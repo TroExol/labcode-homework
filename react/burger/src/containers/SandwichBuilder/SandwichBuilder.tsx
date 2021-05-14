@@ -1,5 +1,12 @@
 import React from 'react';
-import { Button, makeStyles, Typography, useTheme, createStyles } from '@material-ui/core';
+import {
+    Button,
+    makeStyles,
+    Typography,
+    useTheme,
+    createStyles,
+    TextField,
+} from '@material-ui/core';
 import { connect } from 'react-redux';
 import Sandwich, { SandwichIngredientType } from '../../components/Sandwich/Sandwich';
 import { StoreType, StoreDispatchType } from '../../store';
@@ -59,6 +66,19 @@ const useStyles = makeStyles((theme) =>
             border: '2px solid red',
             marginRight: '10px',
         },
+        sandwichOrder: {
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            width: '600px',
+            marginTop: '20px',
+            border: `3px solid ${theme.palette.primary.main}`,
+            padding: '20px',
+        },
+        sandwichOrderField: {
+            width: '400px',
+            margin: '10px auto',
+        },
     }),
 );
 
@@ -87,6 +107,24 @@ const SandwichBuilder = (props: IProps): JSX.Element => {
     const onResetIngredientsHandler = () => {
         resetIngredients();
     };
+
+    const sandwichOrderForm = ingredients.length > 0 && (
+        <div className={classes.sandwichOrder}>
+            <Typography variant="h5" component="h2" color="primary">
+                Заказать
+            </Typography>
+
+            <TextField
+                className={classes.sandwichOrderField}
+                variant="outlined"
+                label="Количество сэндвичей"
+            />
+
+            <Button variant="contained" color="secondary">
+                Добавить в корзину
+            </Button>
+        </div>
+    );
 
     return (
         <div className={classes.root}>
@@ -127,6 +165,8 @@ const SandwichBuilder = (props: IProps): JSX.Element => {
                     onIngredientClick={(index) => onDeleteIngredientHandler(index)}
                 />
             </div>
+
+            {sandwichOrderForm}
         </div>
     );
 };
