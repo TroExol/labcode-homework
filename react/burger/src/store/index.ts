@@ -4,6 +4,7 @@ import { throttle } from 'lodash';
 
 import { loadFromLocalStorage, saveToLocalStorage } from '../utils/local-storage';
 import ingredientsReducer from './ingredients';
+import ordersReducer from './orders';
 
 const LOCAL_STORAGE_REDUX_NAME = 'REDUX_STATE';
 const LOCAL_STORAGE_THROTTLE_TIME = 1000;
@@ -16,6 +17,7 @@ const composeEnhancers =
 
 const rootReducer = combineReducers({
     ingredients: ingredientsReducer,
+    orders: ordersReducer,
 });
 
 const store = createStore(

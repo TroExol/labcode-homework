@@ -19,6 +19,7 @@ import {
     resetIngredientsAction,
     resetIngredientsActionType,
 } from '../../store/ingredients';
+import { addOrderAction, addOrderActionType } from '../../store/orders';
 
 const useStyles = makeStyles((theme) =>
     createStyles({
@@ -88,6 +89,7 @@ interface IProps {
     addIngredient: addIngredientActionType;
     deleteIngredient: deleteIngredientActionType;
     resetIngredients: resetIngredientsActionType;
+    addOrder: addOrderActionType;
 }
 
 const SandwichBuilder = (props: IProps): JSX.Element => {
@@ -95,9 +97,9 @@ const SandwichBuilder = (props: IProps): JSX.Element => {
 
     const classes = useStyles(theme);
 
-    const { ingredients, addIngredient, deleteIngredient, resetIngredients } = props;
+    const { ingredients, addIngredient, deleteIngredient, resetIngredients, addOrder } = props;
 
-    const { handleSubmit, control, formState } = useForm();
+    const { handleSubmit, control, formState, reset } = useForm();
 
     const onAddIngredientHandler = (ingredient: SandwichIngredientType) => {
         addIngredient({ ingredient });
@@ -112,7 +114,9 @@ const SandwichBuilder = (props: IProps): JSX.Element => {
     };
 
     const onSubmitHandler = (data: { amount: string }) => {
-        console.log(data);
+        addOrder({ ingredients, amount: +data.amount });
+        resetIngredients();
+        reset();
     };
 
     const sandwichOrderForm = ingredients.length > 0 && (
@@ -216,6 +220,13 @@ const mapDispatchToProps = (dispatch: StoreDispatchType) => {
         deleteIngredient: ({ ingredientIndex }: { ingredientIndex: number }) =>
             dispatch(deleteIngredientAction({ ingredientIndex })),
         resetIngredients: () => dispatch(resetIngredientsAction()),
+        addOrder: ({
+            ingredients,
+            amount,
+        }: {
+            ingredients: SandwichIngredientType[];
+            amount: number;
+        }) => dispatch(addOrderAction({ ingredients, amount })),
     };
 };
 
