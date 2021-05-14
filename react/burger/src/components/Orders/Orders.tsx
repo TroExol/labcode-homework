@@ -1,10 +1,9 @@
 import React from 'react';
-import { makeStyles, Button, Typography, useTheme, createStyles } from '@material-ui/core';
+import { makeStyles, Typography, createStyles } from '@material-ui/core';
 import { connect } from 'react-redux';
-import { StoreDispatchType, StoreType } from '../../store';
+import { StoreType } from '../../store';
 
-import Sandwich from '../Sandwich/Sandwich';
-import { deleteOrderAction, deleteIngredientActionType } from '../../store/orders';
+import Order from './Order';
 
 const useStyles = makeStyles((theme) => {
     return createStyles({
@@ -23,61 +22,30 @@ const useStyles = makeStyles((theme) => {
             color: theme.palette.secondary.main,
             marginBottom: '15px',
         },
-        orderOutputRoot: {
-            display: 'flex',
-            flexDirection: 'column',
-            justifyContent: 'center',
-            alignItems: 'center',
-            marginTop: '20px',
-        },
-        orderOutputAmount: {
-            marginTop: '10px',
-        },
-        orderOutputDeleteButton: {
-            color: 'red',
-            borderColor: 'red',
-            marginTop: '10px',
-        },
     });
 });
 
 interface IProps {
     orders: StoreType['orders'];
-    deleteOrder: deleteIngredientActionType;
 }
 
 const Orders = (props: IProps) => {
     const classes = useStyles();
 
-    const { orders, deleteOrder } = props;
+    const { orders } = props;
 
     const ordersOutput: JSX.Element[] = [];
 
     if (Object.keys(orders).length > 0) {
         Object.entries(orders).forEach(([key, value]) => {
             const orderOutput = (
-                <div key={key} className={classes.orderOutputRoot}>
-                    <Sandwich ingredients={value.ingredients} />
-
-                    <Typography
-                        className={classes.orderOutputAmount}
-                        variant="h6"
-                        component="span"
-                        color="secondary"
-                    >
-                        Amount: {value.amount}
-                    </Typography>
-
-                    <Button
-                        className={classes.orderOutputDeleteButton}
-                        variant="outlined"
-                        onClick={() => deleteOrder({ orderID: key })}
-                    >
-                        Удалить заказ
-                    </Button>
-                </div>
+                <Order
+                    key={key}
+                    orderID={key}
+                    ingredients={value.ingredients}
+                    amount={value.amount}
+                />
             );
-
             ordersOutput.push(orderOutput);
         });
     }
@@ -105,10 +73,4 @@ const mapStateToProps = (state: StoreType) => {
     };
 };
 
-const mapDispatchToProps = (dispatch: StoreDispatchType) => {
-    return {
-        deleteOrder: ({ orderID }: { orderID: string }) => dispatch(deleteOrderAction({ orderID })),
-    };
-};
-
-export default connect(mapStateToProps, mapDispatchToProps)(Orders);
+export default connect(mapStateToProps)(Orders);
