@@ -4,6 +4,7 @@ import { ThemeProvider, createMuiTheme } from '@material-ui/core/styles';
 import './index.css';
 import { BrowserRouter } from 'react-router-dom';
 import { Provider } from 'react-redux';
+import { SnackbarProvider } from 'notistack';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 import store from './store';
@@ -19,9 +20,11 @@ ReactDOM.render(
     <React.StrictMode>
         <Provider store={store}>
             <ThemeProvider theme={theme}>
-                <BrowserRouter>
-                    <App />
-                </BrowserRouter>
+                <SnackbarProvider maxSnack={5}>
+                    <BrowserRouter>
+                        <App />
+                    </BrowserRouter>
+                </SnackbarProvider>
             </ThemeProvider>
         </Provider>
     </React.StrictMode>,

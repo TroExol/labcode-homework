@@ -1,6 +1,15 @@
 import React from 'react';
-import { Button, makeStyles, Typography, useTheme, createStyles } from '@material-ui/core';
+import {
+    Button,
+    makeStyles,
+    Typography,
+    useTheme,
+    createStyles,
+    TextField,
+} from '@material-ui/core';
 import { connect } from 'react-redux';
+import { useForm, Controller } from 'react-hook-form';
+import { useSnackbar } from 'notistack';
 import Sandwich, { SandwichIngredientType } from '../../components/Sandwich/Sandwich';
 import { StoreType, StoreDispatchType } from '../../store';
 import {
@@ -8,7 +17,10 @@ import {
     addIngredientActionType,
     deleteIngredientAction,
     deleteIngredientActionType,
+    resetIngredientsAction,
+    resetIngredientsActionType,
 } from '../../store/ingredients';
+import { addOrderAction, addOrderActionType } from '../../store/orders';
 
 const useStyles = makeStyles((theme) =>
     createStyles({
@@ -52,6 +64,24 @@ const useStyles = makeStyles((theme) =>
             border: '2px solid #36b310',
             marginRight: '10px',
         },
+        resetButton: {
+            color: 'red',
+            border: '2px solid red',
+            marginRight: '10px',
+        },
+        sandwichOrder: {
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            width: '600px',
+            marginTop: '20px',
+            border: `3px solid ${theme.palette.primary.main}`,
+            padding: '20px',
+        },
+        sandwichOrderField: {
+            width: '400px',
+            margin: '10px auto',
+        },
     }),
 );
 
@@ -59,6 +89,8 @@ interface IProps {
     ingredients: StoreType['ingredients'];
     addIngredient: addIngredientActionType;
     deleteIngredient: deleteIngredientActionType;
+    resetIngredients: resetIngredientsActionType;
+    addOrder: addOrderActionType;
 }
 
 const SandwichBuilder = (props: IProps): JSX.Element => {
@@ -66,7 +98,11 @@ const SandwichBuilder = (props: IProps): JSX.Element => {
 
     const classes = useStyles(theme);
 
-    const { ingredients, addIngredient, deleteIngredient } = props;
+    const { ingredients, addIngredient, deleteIngredient, resetIngredients, addOrder } = props;
+
+    const { handleSubmit, control, formState, reset } = useForm();
+
+    const { enqueueSnackbar, closeSnackbar } = useSnackbar();
 
     const onAddIngredientHandler = (ingredient: SandwichIngredientType) => {
         addIngredient({ ingredient });
@@ -75,6 +111,64 @@ const SandwichBuilder = (props: IProps): JSX.Element => {
     const onDeleteIngredientHandler = (ingredientNumber: number) => {
         deleteIngredient({ ingredientIndex: ingredientNumber });
     };
+
+    const onResetIngredientsHandler = () => {
+        resetIngredients();
+    };
+
+    const onSubmitHandler = (data: { amount: string }) => {
+        addOrder({ ingredients, amount: +data.amount });
+        resetIngredients();
+        reset();
+
+        const snackBar = enqueueSnackbar('Заказ успешно добавлен в вашу корзину', {
+            variant: 'success',
+            anchorOrigin: { horizontal: 'right', vertical: 'top' },
+            onClick: () => closeSnackbar(snackBar),
+        });
+    };
+
+    const sandwichOrderForm = ingredients.length > 0 && (
+        <form onSubmit={handleSubmit(onSubmitHandler)}>
+            <div className={classes.sandwichOrder}>
+                <Typography variant="h5" component="h2" color="primary">
+                    Заказать
+                </Typography>
+
+                <Controller
+                    name="amount"
+                    render={({ field }) => {
+                        return (
+                            <TextField
+                                className={classes.sandwichOrderField}
+                                variant="outlined"
+                                label="Количество сэндвичей"
+                                error={!!formState.errors?.amount?.message}
+                                helperText={formState.errors?.amount?.message}
+                                // eslint-disable-next-line react/jsx-props-no-spreading
+                                {...field}
+                            />
+                        );
+                    }}
+                    control={control}
+                    rules={{
+                        required: { value: true, message: 'Заполните поле количества' },
+                        max: { value: 100, message: 'Максимальное количество - 100' },
+                        min: { value: 1, message: 'Минимальное количество - 1' },
+                        pattern: {
+                            value: /^\d+$/g,
+                            message: 'Введите целое число',
+                        },
+                    }}
+                    defaultValue=""
+                />
+
+                <Button variant="contained" color="secondary" type="submit">
+                    Добавить в корзину
+                </Button>
+            </div>
+        </form>
+    );
 
     return (
         <div className={classes.root}>
@@ -103,6 +197,10 @@ const SandwichBuilder = (props: IProps): JSX.Element => {
                 >
                     +1 Cucumber
                 </Button>
+
+                <Button className={classes.resetButton} onClick={() => onResetIngredientsHandler()}>
+                    Очистить
+                </Button>
             </div>
 
             <div className={classes.sandwichOutput}>
@@ -111,6 +209,8 @@ const SandwichBuilder = (props: IProps): JSX.Element => {
                     onIngredientClick={(index) => onDeleteIngredientHandler(index)}
                 />
             </div>
+
+            {sandwichOrderForm}
         </div>
     );
 };
@@ -128,6 +228,14 @@ const mapDispatchToProps = (dispatch: StoreDispatchType) => {
             dispatch(addIngredientAction({ ingredient })),
         deleteIngredient: ({ ingredientIndex }: { ingredientIndex: number }) =>
             dispatch(deleteIngredientAction({ ingredientIndex })),
+        resetIngredients: () => dispatch(resetIngredientsAction()),
+        addOrder: ({
+            ingredients,
+            amount,
+        }: {
+            ingredients: SandwichIngredientType[];
+            amount: number;
+        }) => dispatch(addOrderAction({ ingredients, amount })),
     };
 };
 

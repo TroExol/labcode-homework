@@ -26,7 +26,7 @@ const useStyles = makeStyles((theme) =>
 
 interface IProps {
     ingredients: SandwichIngredientType[];
-    onIngredientClick: (ingredientIndex: number) => void;
+    onIngredientClick?: (ingredientIndex: number) => void;
 }
 
 const Sandwich = ({ ingredients, onIngredientClick }: IProps): JSX.Element => {
@@ -40,7 +40,7 @@ const Sandwich = ({ ingredients, onIngredientClick }: IProps): JSX.Element => {
         const ingredientComponent = (
             <div
                 key={`${ingredient + index}`}
-                onClick={() => onIngredientClick(index)}
+                onClick={() => onIngredientClick && onIngredientClick(index)}
                 aria-hidden="true"
             >
                 {ingredientsMap[ingredient]}
@@ -65,6 +65,10 @@ const Sandwich = ({ ingredients, onIngredientClick }: IProps): JSX.Element => {
             <SandwichBread />
         </div>
     );
+};
+
+Sandwich.defaultProps = {
+    onIngredientClick: () => null,
 };
 
 export default Sandwich;
