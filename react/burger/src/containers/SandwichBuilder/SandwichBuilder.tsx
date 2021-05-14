@@ -8,6 +8,7 @@ import {
     TextField,
 } from '@material-ui/core';
 import { connect } from 'react-redux';
+import { useForm, Controller } from 'react-hook-form';
 import Sandwich, { SandwichIngredientType } from '../../components/Sandwich/Sandwich';
 import { StoreType, StoreDispatchType } from '../../store';
 import {
@@ -96,6 +97,8 @@ const SandwichBuilder = (props: IProps): JSX.Element => {
 
     const { ingredients, addIngredient, deleteIngredient, resetIngredients } = props;
 
+    const { handleSubmit, control, formState } = useForm();
+
     const onAddIngredientHandler = (ingredient: SandwichIngredientType) => {
         addIngredient({ ingredient });
     };
@@ -108,22 +111,50 @@ const SandwichBuilder = (props: IProps): JSX.Element => {
         resetIngredients();
     };
 
+    const onSubmitHandler = (data: { amount: string }) => {
+        console.log(data);
+    };
+
     const sandwichOrderForm = ingredients.length > 0 && (
-        <div className={classes.sandwichOrder}>
-            <Typography variant="h5" component="h2" color="primary">
-                Заказать
-            </Typography>
+        <form onSubmit={handleSubmit(onSubmitHandler)}>
+            <div className={classes.sandwichOrder}>
+                <Typography variant="h5" component="h2" color="primary">
+                    Заказать
+                </Typography>
 
-            <TextField
-                className={classes.sandwichOrderField}
-                variant="outlined"
-                label="Количество сэндвичей"
-            />
+                <Controller
+                    name="amount"
+                    render={({ field }) => {
+                        return (
+                            <TextField
+                                className={classes.sandwichOrderField}
+                                variant="outlined"
+                                label="Количество сэндвичей"
+                                error={!!formState.errors?.amount?.message}
+                                helperText={formState.errors?.amount?.message}
+                                // eslint-disable-next-line react/jsx-props-no-spreading
+                                {...field}
+                            />
+                        );
+                    }}
+                    control={control}
+                    rules={{
+                        required: { value: true, message: 'Заполните поле количества' },
+                        max: { value: 100, message: 'Максимальное количество - 100' },
+                        min: { value: 1, message: 'Минимальное количество - 1' },
+                        pattern: {
+                            value: /^\d+$/g,
+                            message: 'Введите целое число',
+                        },
+                    }}
+                    defaultValue=""
+                />
 
-            <Button variant="contained" color="secondary">
-                Добавить в корзину
-            </Button>
-        </div>
+                <Button variant="contained" color="secondary" type="submit">
+                    Добавить в корзину
+                </Button>
+            </div>
+        </form>
     );
 
     return (
