@@ -55,7 +55,7 @@ export const deleteOrderAction: deleteIngredientActionType = ({ orderID }) => {
 // Reset Order
 export type resetOrdersActionType = () => IResetOrdersAction;
 
-export const resetOrderAction: resetOrdersActionType = () => {
+export const resetOrdersAction: resetOrdersActionType = () => {
     return {
         type: 'RESET_ORDERS',
     };

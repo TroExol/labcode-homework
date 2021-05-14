@@ -1,9 +1,12 @@
-import React from 'react';
-import { makeStyles, Typography, createStyles } from '@material-ui/core';
+import React, { useState } from 'react';
+import { makeStyles, Typography, createStyles, Modal, Button } from '@material-ui/core';
 import { connect } from 'react-redux';
-import { StoreType } from '../../store';
+import { useHistory } from 'react-router-dom';
+import { StoreDispatchType, StoreType } from '../../store';
 
 import Order from './Order';
+import OrdersConfirmation from './OrdersConfirmation';
+import { resetOrdersAction, resetOrdersActionType } from '../../store/orders';
 
 const useStyles = makeStyles((theme) => {
     return createStyles({
@@ -22,17 +25,37 @@ const useStyles = makeStyles((theme) => {
             color: theme.palette.secondary.main,
             marginBottom: '15px',
         },
+        modal: {
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'center',
+            alignItems: 'center',
+            height: '100vh',
+        },
     });
 });
 
 interface IProps {
     orders: StoreType['orders'];
+    resetOrders: resetOrdersActionType;
 }
 
 const Orders = (props: IProps) => {
     const classes = useStyles();
 
-    const { orders } = props;
+    const [openConfirmationState, setOpenConfirmationState] = useState<boolean>(false);
+
+    const { orders, resetOrders } = props;
+
+    const history = useHistory();
+
+    const onSuccessConfirmationHandler = () => {
+        setOpenConfirmationState(() => false);
+
+        resetOrders();
+
+        history.push('/');
+    };
 
     const ordersOutput: JSX.Element[] = [];
 
@@ -63,6 +86,25 @@ const Orders = (props: IProps) => {
                     Нет заказов
                 </Typography>
             )}
+
+            {ordersOutput.length > 0 && (
+                <Button
+                    variant="contained"
+                    color="primary"
+                    style={{ marginTop: '20px' }}
+                    onClick={() => setOpenConfirmationState(() => true)}
+                >
+                    Подтвердить
+                </Button>
+            )}
+
+            <Modal
+                className={classes.modal}
+                open={openConfirmationState}
+                onBackdropClick={() => setOpenConfirmationState(() => false)}
+            >
+                <OrdersConfirmation onSuccessConfirm={onSuccessConfirmationHandler} />
+            </Modal>
         </div>
     );
 };
@@ -73,4 +115,10 @@ const mapStateToProps = (state: StoreType) => {
     };
 };
 
-export default connect(mapStateToProps)(Orders);
+const mapDispatchToProps = (dispatch: StoreDispatchType) => {
+    return {
+        resetOrders: () => dispatch(resetOrdersAction()),
+    };
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(Orders);
